@@ -1,0 +1,255 @@
+CREATE Database sales;
+// CREATION OF DATABASE & TABLES//
+
+CREATE Database sales;
+use sales;
+Create table Sales_reps (
+             region varchar (20) primary key,
+			 Sales_rep varchar (10) not null);
+create table geography ( 
+             city varchar (20) primary key,
+             region varchar (20) not null,
+             foreign key (region) references Sales_reps(region));
+create table customers (
+             custNumber int primary key,
+             FamName varchar(20) not null,
+             city varchar(20) not null,
+             first_order_date date not null,
+             biz_or_Ind text not null,
+             industry text,
+             foreign key(city) references geography(city));
+create table products (
+             prodNumber varchar (10) primary key,
+			 prodName varchar(20) not null unique ,
+			 list_price decimal(4,2) not null);
+create table orders (
+             ordNumber int primary key,
+             ordDate date not null,
+             custNumber int not null,
+             foreign key(custNumber) references customers(custNumber));
+create table order_lines(
+             ordNumber int,
+             lineNumber int,
+             prodNumber varchar (10) not null,
+             primary key(ordNumber,lineNumber),
+             foreign key(ordNumber) references orders(ordNumber));
+alter table order_lines add foreign key(prodNumber) references products(prodNumber);
+alter table order_lines add column qty_ordered int not null;
+
+
+
+// INSERTING VALUES IN TABLES//
+
+
+insert into sales_reps values 
+            ('Midwest','Aretha'),
+            ('Northeast','Beyoncé'),
+            ('Northwest','Rihanna'),
+            ('Southeast','Diana'),
+            ('Southwest','Michelle');
+select* from sales_reps;
+
+insert into geography values
+           ('Atlanta','Southeast'),
+           ('Boston','Northeast'),
+           ('Chicago','Midwest'),
+           ('Cincinnati','Midwest'),
+           ('Dallas','Southwest'),
+           ('Denver','Southwest'),
+           ('Houston','Southwest'),
+           ('Kansas City','Midwest'),
+           ('Los Angeles','Southwest'),
+           ('Miami','Southeast'),
+           ('Minneapolis','Midwest'),
+           ('New Orleans','Southeast'),
+           ('New York','Northeast'),
+           ('Seattle','Northwest'),
+           ('St. Louis','Midwest'),
+           ('Tulsa','Southwest'),
+           ('Washington DC','Southeast'),
+           ('Phoenix','Southwest');
+select * from geography;
+
+insert into customers values
+            (1028,'Simon','Chicago','2012/2/5','Biz','Candy'),
+            (1717,'King','Atlanta','2014/4/5','Biz','Shoes'),
+            (2395,'Krall','Seattle','2018/06/02','Biz','Candy'),
+            (2765,'Gillespie','Tulsa','2008/7/2','Biz','Tires'),
+            (2918,'Skaggs','Cincinnati','2015/3/25','Biz','Shoes'),
+            (2929,'Ross','Kansas City','2018/5/12','Biz','Tires'),
+            (2987,'Davis','Houston','2012/4/5','Biz','Candy'),
+            (4343,'Taylor','Minneapolis','2014/6/2','Biz','Tires'),
+            (8282,'Allman','Los Angeles','2012/4/8','Biz','Shoes');
+ insert into customers 
+            (custNumber,
+             FamName,
+             city ,
+             first_order_date ,
+             biz_or_Ind)  values
+	    (1029,'Cooper','Phoenix','2015/3/5','Indiv'),
+            (1098,'Ellington','New York','2013/4/1','Indiv'),
+            (1716,'Jackson','Denver','2018/5/6','Indiv'),
+            (1765,'MacDonald','Dallas','2017/10/17','Indiv'),
+            (2817,'Jarreau','Miami','2002/4/8','Indiv'),
+            (2828,'Fitzgerald','Washington DC','2003/3/3','Indiv'),
+            (2870,'Charles','Boston','2012/2/15','Indiv'),
+            (2928,'Petty','St. Louis','2013/4/19','Indiv'),
+            (3434,'Coltrane','New Orleans','2018/10/17','Indiv'),
+            (4543,'Redding','New York','2015/7/2','Indiv'),
+            (8348,'Obama','Chicago','2008/11/4','Indiv');
+select * from customers;
+select custNumber, FamName,city, date_format (first_order_date,'%m-%d-%Y') as 'First order date',biz_or_Ind,industry from customers;
+
+Insert into products
+             values
+	    ('RP123','Mixing bowl',25.00),
+            ('RP234','Mixing spoon',32.00),
+            ('RP345','Sunglasses',4.00),
+            ('RP456','Screwdriver',66.00),
+            ('MH941','USB Drive',7.00),
+            ('MH832','Mr. Potatohead',5.00),
+            ('MH909','Shoes',33.00),
+            ('MH445','Hat',45.00);
+            
+select* from products;
+SELECT prodNumber,prodName, CONCAT('$',list_price) as 'list price' FROM products;
+
+insert into orders values
+            (100234,'2019/1/1',1028),
+            (100235,'2019/1/2',1029),
+	    (100236,'2019/1/3',1098),
+	    (100237,'2019/1/6',1716),
+            (100238,'2019/1/7',1717),
+            (100239,'2019/1/8',1765),
+            (100345,'2019/1/10',2395),
+            (100346,'2019/1/11',2765),
+            (100347,'2019/1/12',2817),
+            (100348,'2019/1/16',2828),
+	    (100349,'2019/1/17',2870),
+            (100432,'2019/1/19',2918),
+            (100433,'2019/1/21',2928),
+            (100434,'2019/1/22',2929),
+            (100435,'2019/1/23',2987),
+            (100436,'2019/1/24',3434),
+            (100437,'2019/1/26',4343),
+            (100438,'2019/1/27',4543),
+            (100439,'2019/1/28',8282),
+            (100444,'2019/1/30',8348),
+            (100455,'2019/1/31',1028),
+            (100456,'2019/1/31',1029);
+select * from orders;
+select ordNumber, date_format (ordDate,'%m-%d-%Y') as 'Order date', custNumber from orders;
+
+insert into order_lines values
+            (100234,1,'RP123',3),
+	    (100235,1,'RP234',6),
+            (100236,1,'RP345',2),
+            (100236,2,'RP456',8),
+	    (100236,3,'MH941',12),
+	    (100237,1,'MH832',4),
+            (100238,1,'MH909',8),
+            (100239,1,'MH445',1),
+            (100239,2,'RP123',1),
+	    (100345,1,'RP234',7),
+            (100346,1,'RP345',1),
+            (100347,1,'RP456',10),
+            (100347,2,'MH941',6),
+            (100347,3,'MH832',1),
+            (100347,4,'MH909',1),
+            (100348,1,'MH445',12),
+            (100349,1,'RP123',9),
+            (100349,2,'RP234',3),
+            (100432,1,'RP345',7),
+            (100432,2,'RP456',2),
+            (100433,1,'MH941',10),
+            (100434,1,'MH832',1),
+            (100435,1,'MH909',1),
+            (100436,1,'MH445',1),
+            (100436,2,'RP123',1),
+            (100437,1,'RP234',4),
+            (100438,1,'RP345',3),
+            (100439,1,'RP456',1),
+            (100439,2,'MH941',7),
+            (100444,1,'MH832',3),
+            (100455,1,'MH909',1),
+            (100456,1,'MH445',7);
+select * from order_lines;
+
+// QUERIES//
+
+****Question 1****
+
+select 
+       products.prodName,
+       date_format (orders.ordDate,'%m-%d-%Y') as 'Order date',
+       geography.region,
+       sales_reps.Sales_rep
+       from order_lines 
+       join orders using (ordNumber)
+       join products using (prodNumber)
+       join customers using (custNumber)
+       join geography  using (city)
+       join sales_reps using (region) 
+       where DATE_FORMAT(ordDate, '%M') = 'january' ;
+
+****Question 2****
+
+select products.prodName,
+       concat('$',cast(sum(products.list_price) as char (20))) as 'total price'
+       from products 
+       join order_lines using (prodNumber)
+       join orders using (ordNumber) 
+       where DATE_FORMAT(ordDate, '%M') = 'january' group by 1;
+
+       
+****Question 3****
+
+select sum(order_lines.qty_ordered) as 'sales',
+            Sales_rep 
+		from order_lines
+        join orders using (ordNumber)
+        join customers using (custNumber)
+        join geography using (city)
+        join sales_reps using (region)
+        group by Sales_rep;
+
+        
+****Question 4****
+
+select * from ( select customers.FamName ,
+		biz_or_Ind,
+       products.list_price*order_lines.qty_ordered as'sales revenue'
+       from customers
+       join orders using (custNumber)
+       join order_lines using (ordNumber)
+       join products using (prodNumber) 
+       where biz_or_Ind = 'Biz' order by 3 desc limit 3 ) as a
+       union all 
+SELECT *
+FROM (select customers.FamName ,
+		biz_or_Ind,
+       products.list_price*order_lines.qty_ordered as'sales revenue'
+       from customers
+       join orders using (custNumber)
+       join order_lines using (ordNumber)
+       join products using (prodNumber) 
+       where biz_or_Ind = 'Indiv' order by 3 desc limit 3) as b ;
+
+****Question 5****
+   
+select products.prodName, 
+       sum(order_lines.qty_ordered) as 'quantity selling'
+       from products 
+       join order_lines using (prodNumber) 
+       group by order_lines.prodNumber order by 2 desc limit 5 ;
+
+****Question 6****
+
+select geography.region , count(order_lines.ordNumber) as ' number of orders',
+	  avg(products.list_price*order_lines.qty_ordered) as 'average of sales revenue per order'
+	  from order_lines 
+	  join products using (prodNumber)
+      join orders using (ordNumber)
+      join customers using (custNumber)
+      join geography using (city)
+      group by 1 ;
